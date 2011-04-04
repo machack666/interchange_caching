@@ -713,6 +713,7 @@ sub catalog_directives {
 	['CartTriggerQuantity',	'yesno',		 'no'],
     ['UserTrack',        'yesno',            'no'],
 	['DebugHost',	     'ip_address_regexp',	''],
+	['SuppressCachedCookies', 'yesno',       'no'],
 	['BounceReferrals',  'yesno',            'no'],
 	['BounceReferralsRobot', 'yesno',        'no'],
 	['BounceRobotSessionURL',		 'yesno', 'no'],

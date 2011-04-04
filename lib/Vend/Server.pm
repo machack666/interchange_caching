@@ -522,7 +522,8 @@ sub parse_multipart {
 sub create_cookie {
 	my($domain,$path) = @_;
 	my  $out;
-	return '' if $Vend::tmp_session;
+	return '' if $Vend::tmp_session || $Vend::suppress_cookies;
+
 	my @jar;
 	push @jar, [
 				($::Instance->{CookieName} || 'MV_SESSION_ID'),
@@ -721,6 +722,33 @@ sub respond {
 		else { print $fh "HTTP/1.0 $status\r\n"; }
 	}
 
+	# Here we decide if we are going to suppress cookie output for the
+	# page; note that this is more-or-less equivalent to saying that
+	# this content is cacheable, and thus we expect (and enforce) that
+	# the effect of hitting this page both with and without a session
+	# (i.e., cache miss or cache hit).  We enforce this by ensuring
+	# that a cacheable page does not set cookies (even if it tries),
+	# and by additionally preventing a session write.
+
+	# The rationale here is that since a user with a session who
+	# fetches from the cache would not have their session altered at
+	# all, we should ensure that the same (lack of) effect will befall
+	# the user who happens to hit the page itself.
+
+	# We ensure that POSTs are never suppressed (i.e., cacheable), and
+	# we also allow this option to be configured per catalog, as not
+	# every catalog may be be setup to properly handle these
+	# assumptions and affects.
+
+	$Vend::suppress_cookies =
+		$CGI::request_method !~ /POST/i &&
+		$Vend::Cfg->{SuppressCachedCookies} &&
+		(
+			(defined $::Pragma->{cache_control} && ($::Pragma->{cache_control} !~ /no-cache/i)) ||
+			($Vend::StatusLine =~ /^Cache-Control:\s+(?!no-cache)\s*$/im)
+		)
+	;
+
 	if ( ! $Vend::tmp_session
 		and (
 			! $Vend::CookieID && ! $::Instance->{CookiesSet}
@@ -728,6 +756,7 @@ sub respond {
 			or defined $::Instance->{Cookies}
 		  )
 			and $Vend::Cfg->{Cookies}
+			and !$Vend::suppress_cookies
 		)
 	{
 		my @domains;
