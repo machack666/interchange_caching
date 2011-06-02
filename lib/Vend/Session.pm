@@ -348,6 +348,12 @@ sub close_session {
 }
 
 sub write_session {
+
+    if ($Vend::suppress_cookies) {
+#::logDebug('Skipping session write on cacheable resource');
+        return $Vend::Session->{'user'};
+    }
+
     my($s);
 #::logDebug ("write session id=$Vend::SessionID  name=$Vend::SessionName\n");
 	my $time = time;
