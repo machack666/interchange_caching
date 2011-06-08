@@ -523,6 +523,12 @@ sub parse_multipart {
 sub create_cookie {
 	my($domain,$path) = @_;
 	my  $out;
+
+    if ($Vend::suppress_cookies) {
+#::logDebug('explicitly clearing the cookie jar (nom nom nom)');
+        undef $::Instance->{Cookies};
+    }
+
 	return '' if $Vend::tmp_session || $Vend::suppress_cookies;
 
 	if (my $sub = $Global::GlobalSub->{$::Variable->{OutputCookieHook}}) {
