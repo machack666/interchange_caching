@@ -581,6 +581,7 @@ $form_action{go} = $form_action{return};
 # Process the completed order or search page.
 
 sub do_process {
+	$::Instance->{Volatile} = 1 if ! defined $::Instance->{Volatile}; # Allow non-volatility if previously defined
 
 	# Prevent using keys operation more than once
     my @cgikeys = keys %CGI::values;

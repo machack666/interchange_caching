@@ -314,6 +314,7 @@ sub parse_cgi {
 
 	my $request_method = "\U$CGI::request_method";
 	if ($request_method eq 'POST') {
+        $::Instance->{Volatile} = 1;
 #::logDebug("content type header: " . $CGI::content_type);
 		## check for valid content type
 		if ($CGI::content_type =~ m{^(?:multipart/form-data|application/x-www-form-urlencoded|application/xml|application/json)\b}i) {

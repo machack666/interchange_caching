@@ -2012,6 +2012,8 @@ sub route_order {
 
 # Order an item
 sub do_order {
+	$::Instance->{Volatile} = 1 if ! defined $::Instance->{Volatile}; # Allow non-volatility if previously defined
+
     my($path) = @_;
 	my $code        = $CGI::values{mv_arg};
 #::logDebug("do_order: path=$path");
