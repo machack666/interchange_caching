@@ -524,6 +524,10 @@ sub create_cookie {
 	my  $out;
 	return '' if $Vend::tmp_session || $Vend::suppress_cookies;
 
+	if (my $sub = $Global::GlobalSub->{$::Variable->{OutputCookieHook}}) {
+		$sub->();
+	}
+
 	my @jar;
 	push @jar, [
 				($::Instance->{CookieName} || 'MV_SESSION_ID'),
@@ -754,6 +758,7 @@ sub respond {
 			! $Vend::CookieID && ! $::Instance->{CookiesSet}
 			or defined $Vend::Expire
 			or defined $::Instance->{Cookies}
+			or defined $::Variable->{OutputCookieHook}
 		  )
 			and $Vend::Cfg->{Cookies}
 			and !$Vend::suppress_cookies
