@@ -769,6 +769,7 @@ sub respond {
 		  )
 			and $Vend::Cfg->{Cookies}
 			and !$Vend::suppress_cookies
+			and $status !~ /^4\d\d/
 		)
 	{
 		my @domains;
